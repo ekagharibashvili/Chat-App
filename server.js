@@ -9,6 +9,8 @@ app.use(express.static(__dirname));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+mongoose.promise = Promise;
+
 const dbUrl =
   "mongodb+srv://ekagari:chatapp123@cluster0.ehrkk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
@@ -20,19 +22,24 @@ app.get("/messages", (req, res) => {
 
 app.post("/messages", (req, res) => {
   const message = new Message(req.body);
-  message.save((err) => {
-    if (err) sendStatus(500);
-    Message.findOne({ message: "badword" }, (err, censored) => {
+  message
+    .save()
+    .then(() => {
+      console.log("saved");
+      return Message.findOne({ message: "badword" });
+    })
+    .then((censored) => {
       if (censored) {
         console.log("censored words found", censored);
-        Message.remove({ __id: censored.id }, (err) => {
-          console.log("removed censored message");
-        });
+        return Message.remove({ __id: censored.id });
       }
+      io.emit("message", req.body);
+      return res.sendStatus(200);
+    })
+    .catch((err) => {
+      res.sendStatus(500);
+      console.error(err);
     });
-    io.emit("message", req.body);
-    return res.sendStatus(200);
-  });
 });
 
 io.on("connection", (socket) => {
