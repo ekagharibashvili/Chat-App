@@ -16,6 +16,7 @@
   crossorigin="anonymous"
 ></script>
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <div
   class="container"
   style="background-color: rgb(202, 220, 246); width: 50%; margin-top: 2rem"
@@ -39,6 +40,7 @@
   <div id="messages"></div>
 </div>
 <script>
+  const socket = io();
   $(() => {
     $("#send").click(() => {
       const message = { name: $("#name").val(), message: $("#message").val() };
@@ -46,7 +48,10 @@
     });
     getMessages();
   });
-  function addMessages(message) {
+
+  socket.on("message", addMessage);
+
+  function addMessage(message) {
     if (message.name !== undefined && message.message !== undefined) {
       $("#messages").append(
         `<h4>${message.name}</h4><p>${message.message}</p>`
