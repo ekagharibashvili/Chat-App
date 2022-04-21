@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "jasmine",
     "start": "nodemon server.js"
   },
   "author": "",
@@ -15,6 +16,8 @@
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "jasmine": "^4.1.0",
+    "nodemon": "^2.0.15",
+    "request": "^2.88.2"
   }
 }
